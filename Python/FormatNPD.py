@@ -51,7 +51,8 @@ def Main():
     path = "./Data/20210122_100221_G.NPD"
     outputDirectory = "./Output"
     entries = {
-        "Pri-GPS" :          ( "R44  0",         ["  ", ","]        ),
+        # Title: ( ID, Separators )
+        "Topside-GPS" :      ( "R44  0",         ["  ", ","]        ),
         "Seapath-Gyro" :     ( "R104  3",        ["  ", ","]        ),
         "PRDID-Gyro" :       ( "R132  4",        ["  ", ","]        ),
         "HPR410-HiPAP" :     ( "R496  10",       ["  ", ","]        ),
