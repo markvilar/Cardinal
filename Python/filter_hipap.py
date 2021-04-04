@@ -1,11 +1,14 @@
 import datetime
-import matplotlib
-matplotlib.use("TkAgg")
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from mpl_toolkits.mplot3d import Axes3D
+#from mpl_toolkits.mplot3d import Axes3D
+
+import matplotlib
+matplotlib.use("TkAgg")
+import matplotlib.pyplot as plt
+plt.style.use("./Styles/scientific.mplstyle")
+
 from typing import Dict
 
 import filters
@@ -15,15 +18,15 @@ import utm
 def main():
     # Script variables.
     save_figures = True
-    show_figures = True
-    save_csv = True
-    figure_directory = "./Figures/Dive-2/"
-    output_directory = "./Output/Dive-2/"
+    show_figures = False
+    save_csv = False
+    figure_directory = "./Figures/Filtered/Dive-1/"
+    output_directory = "./Output/Filtered/Dive-1/"
 
     # Load data.
     input_paths = {
-        "ROV-HiPAP" : "./Data/Outlier-Filtered/ROV-Dive-2/ROV-HiPAP.csv"
-    }
+		"ROV-HiPAP" : "./Data/Outlier-Filtered/Dive-1/ROV-HiPAP.csv"
+	}
     data = utilities.load_csv_files(input_paths)
     data = data["ROV-HiPAP"]
 
@@ -100,54 +103,58 @@ def main():
     # --------------------------------------------------------------------------
     
     # Northing plot.
-    fig1, ax1 = plt.subplots(figsize=(14, 7))
+    fig1, ax1 = plt.subplots(figsize=(4, 4))
     ax1.plot(data["Epoch"], data["UTM Northing"], \
         linewidth=1, label="Unfiltered")
     ax1.plot(filtered_data["Epoch"], filtered_data["UTM Northing"], \
         linewidth=1, label="Filtered")
-    ax1.set_title("Northing")
+    ax1.set_xlabel(r"Epoch, $t$ $[\text{s}]$")
+    ax1.set_ylabel(r"UTM Northing, $[\text{m}]$")
     ax1.legend()
 
     # Easting plot.
-    fig2, ax2 = plt.subplots(figsize=(14, 7))
+    fig2, ax2 = plt.subplots(figsize=(4, 4))
     ax2.plot(data["Epoch"], data["UTM Easting"], \
         linewidth=1, label="Unfiltered")
     ax2.plot(filtered_data["Epoch"], filtered_data["UTM Easting"], \
         linewidth=1, label="Filtered")
-    ax2.set_title("Easting")
+    ax2.set_xlabel(r"Epoch, $t$ $[\text{s}]$")
+    ax2.set_ylabel(r"UTM Easting, $[\text{m}]$")
     ax2.legend()
 
     # Depth plot.
-    fig3, ax3 = plt.subplots(figsize=(14, 7))
+    fig3, ax3 = plt.subplots(figsize=(4, 4))
     ax3.plot(data["Epoch"], data["Depth"], \
         linewidth=1, label="Unfiltered")
     ax3.plot(filtered_data["Epoch"], filtered_data["Depth"], \
         linewidth=1, label="Filtered")
-    ax3.set_title("Depth")
+    ax3.set_xlabel(r"Epoch, $t$ $[\text{s}]$")
+    ax3.set_ylabel(r"Depth, $[\text{m}]$")
     ax3.legend()
     
     # Planar trajectory plot.
-    fig4, ax4 = plt.subplots(nrows=1, ncols=2, figsize=(14, 7))
-    ax4[0].plot(data["UTM Easting"], data["UTM Northing"], \
-        linewidth=1)
-    ax4[0].set_title("Trajectory - Unfiltered")
-
-    ax4[1].plot(filtered_data["UTM Easting"], filtered_data["UTM Northing"], \
-        linewidth=1)
-    ax4[1].set_title("Trajectory - Filtered")
+    fig4, ax4 = plt.subplots(figsize=(4, 4))
+    ax4.plot(data["UTM Easting"], data["UTM Northing"], \
+	    linewidth=1, label="Unfiltered") 
+    ax4.plot(filtered_data["UTM Easting"], filtered_data["UTM Northing"], \
+	    linewidth=1, label="Filtered") 
+    ax4.set_xlabel(r"UTM Easting, $[\text{m}]$")
+    ax4.set_ylabel(r"UTM Northing, $[\text{m}]$")
+    ax4.legend()
 
     # 3D trajectory plot.
-    fig5 = plt.figure(figsize=(14, 7))
-    ax5 = [None, None]
-    ax5[0] = fig5.add_subplot(121, projection='3d')
-    ax5[0].plot(data["UTM Easting"], data["UTM Northing"], data["Depth"])
-    ax5[0].invert_zaxis()
+    fig5 = plt.figure(figsize=(6, 6))
+    ax5 = fig5.add_subplot(111, projection='3d')
+    ax5.plot(data["UTM Easting"], data["UTM Northing"], data["Depth"], \
+        linewidth=1, label="Unfiltered")
+    ax5.plot(filtered_data["UTM Easting"], filtered_data["UTM Northing"], \
+        filtered_data["Depth"], linewidth=1, label="Filtered")
+    ax5.invert_zaxis()
+    ax5.set_xlabel(r"UTM Easting, $[\text{m}]$")
+    ax5.set_ylabel(r"UTM Northing, $[\text{m}]$")
+    ax5.set_zlabel(r"Depth, $[\text{m}]$")
+    ax5.legend()
 
-    ax5[1] = fig5.add_subplot(122, projection='3d')
-    ax5[1].plot(filtered_data["UTM Easting"], filtered_data["UTM Northing"], \
-        filtered_data["Depth"])
-    ax5[1].invert_zaxis()
-    
     if show_figures:
         plt.show()
 
