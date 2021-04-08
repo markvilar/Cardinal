@@ -14,7 +14,7 @@ import filters
 import utilities
 import utm
 
-def filter_gyrocompass(data_config: data.DataConfiguration, 
+def filter_gyroscope(data_config: data.DataConfiguration, 
     filter_config: filters.FilterConfiguration, \
     time_limits: List, roll_limits: List, pitch_limits: List, \
     heading_limits: List):
@@ -41,11 +41,16 @@ def filter_gyrocompass(data_config: data.DataConfiguration,
     signals = filters.add_appendage(signals, filter_config)
 
     # Filter data and adjust for time delay.
-    filtered_signals, delay = filters.FIR_filter(signals, filter_config, axis=1)
-    filtered_time = time - delay
+    filtered_signals, filter_delay = filters.FIR_filter(signals, \
+        filter_config, axis=1)
+    filtered_time = time - filter_delay
 
-    print("Sampling time: {0}".format(1 / filter_config.sample_frequency))
-    print("Filter time delay: {0}".format(delay))
+    print("\nGyroscope:")
+    print(" - Sampling time:      {0:.4f}".format( \
+        1 / filter_config.sample_frequency))
+    print(" - Sampling frequency: {0:.4f}".format( \
+        filter_config.sample_frequency))
+    print(" - Filter time delay:  {0:.4f}".format(filter_delay))
 
     # Remove end values.
     filtered_signals = filters.remove_appendage(filtered_signals, \
@@ -77,11 +82,11 @@ def filter_gyrocompass(data_config: data.DataConfiguration,
     # --------------------------------------------------------------------------
     
     # Roll plot.
-    fig1, ax1 = plt.subplots(figsize=(5, 5))
+    fig1, ax1 = plt.subplots(figsize=(4, 4))
     ax1.plot(data["Epoch"] - data["Epoch"][0], data["Roll"], \
-        linewidth=1, label="Unfiltered")
+        linewidth=1.0, label="Unfiltered")
     ax1.plot(filtered_data["Epoch"] - data["Epoch"][0], \
-	    filtered_data["Roll"], linewidth=1, label="Filtered")
+	    filtered_data["Roll"], linewidth=1.0, label="Filtered")
     ax1.set_xlim(time_limits)
     ax1.set_ylim(roll_limits)
     ax1.set_xlabel(r"Time, $t$ $[\text{s}]$")
@@ -89,11 +94,11 @@ def filter_gyrocompass(data_config: data.DataConfiguration,
     ax1.legend()
 
     # Pitch plot.
-    fig2, ax2 = plt.subplots(figsize=(5, 5))
+    fig2, ax2 = plt.subplots(figsize=(4, 4))
     ax2.plot(data["Epoch"] - data["Epoch"][0], data["Pitch"], \
-        linewidth=1, label="Unfiltered")
+        linewidth=1.0, label="Unfiltered")
     ax2.plot(filtered_data["Epoch"] - data["Epoch"][0], \
-	    filtered_data["Pitch"], linewidth=1, label="Filtered")
+	    filtered_data["Pitch"], linewidth=1.0, label="Filtered")
     ax2.set_xlim(time_limits)
     ax2.set_ylim(pitch_limits)
     ax2.set_xlabel(r"Time, $t$ $[\text{s}]$")
@@ -101,11 +106,11 @@ def filter_gyrocompass(data_config: data.DataConfiguration,
     ax2.legend()
 
     # Heading plot.
-    fig3, ax3 = plt.subplots(figsize=(5, 5))
+    fig3, ax3 = plt.subplots(figsize=(4, 4))
     ax3.plot(data["Epoch"] - data["Epoch"][0], data["Heading"], \
-        linewidth=1, label="Unfiltered")
+        linewidth=1.0, label="Unfiltered")
     ax3.plot(filtered_data["Epoch"] - data["Epoch"][0], \
-	    filtered_data["Heading"], linewidth=1, label="Filtered")
+	    filtered_data["Heading"], linewidth=1.0, label="Filtered")
     ax3.set_xlim(time_limits)
     ax3.set_ylim(heading_limits)
     ax3.set_xlabel(r"Time, $t$ $[\text{s}]$")
@@ -120,16 +125,16 @@ def filter_gyrocompass(data_config: data.DataConfiguration,
     # --------------------------------------------------------------------------
 
     if data_config.save_figures:
-        fig1.savefig(data_config.output + "ROV-Gyrocompass-Roll.png", \
+        fig1.savefig(data_config.output + "ROV-Gyroscope-Roll.eps", \
             dpi=300)
-        fig2.savefig(data_config.output + "ROV-Gyrocompass-Pitch.png", \
+        fig2.savefig(data_config.output + "ROV-Gyroscope-Pitch.eps", \
             dpi=300)
-        fig3.savefig(data_config.output + "ROV-Gyrocompass-Heading.png", \
+        fig3.savefig(data_config.output + "ROV-Gyroscope-Heading.eps", \
             dpi=300)
 
     if data_config.save_output:
         filtered_data = pd.DataFrame(filtered_data)
-        filtered_data.to_csv(data_config.output + "ROV-Gyrocompass.csv", \
+        filtered_data.to_csv(data_config.output + "ROV-Gyroscope.csv", \
             sep=',')
 
 def main():
@@ -141,7 +146,7 @@ def main():
 
     # Parse arguments.
     parser = argparse.ArgumentParser( \
-        description="Filter gyrocompass data with a FIR filter.")
+        description="Filter gyroscope data with a FIR lowpass filter.")
     parser.add_argument("input", type=str, help="Input file path.")
     parser.add_argument("output", type=str, help="Output directory path.")
     parser.add_argument("order", type=int, help="Filter order.")
@@ -164,7 +169,7 @@ def main():
         args.appendage)
 
     # Filter data.
-    filter_gyrocompass(data_config, filter_config, time_limits, roll_limits, \
+    filter_gyroscope(data_config, filter_config, time_limits, roll_limits, \
         pitch_limits, heading_limits)
 
 if __name__ == '__main__':

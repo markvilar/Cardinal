@@ -14,7 +14,7 @@ import filters
 import utilities
 import utm
 
-def filter_digiquartz(data_config: data.DataConfiguration, \
+def filter_pressure_sensor(data_config: data.DataConfiguration, \
     filter_config: filters.FilterConfiguration, time_limits: List, \
     depth_limits: List):
     """
@@ -34,12 +34,17 @@ def filter_digiquartz(data_config: data.DataConfiguration, \
     filtered_depth = filters.add_appendage(depth.copy(), filter_config)
 
     # Filter data and account for time delay.
-    filtered_depth, delay = filters.FIR_filter(filtered_depth, filter_config)
+    filtered_depth, filter_delay = filters.FIR_filter(filtered_depth, \
+        filter_config)
 
-    filtered_time = time - delay
+    filtered_time = time - filter_delay
 
-    print("Sampling time: {0}".format(1/filter_config.sample_frequency))
-    print("Filter time delay: {0}".format(delay))
+    print("\nPressure Sensor:")
+    print(" - Sampling time:      {0:.4f}".format( \
+        1 / filter_config.sample_frequency))
+    print(" - Sampling frequency: {0:.4f}".format( \
+        filter_config.sample_frequency))
+    print(" - Filter time delay:  {0:.4f}".format(filter_delay))
 
     # Remove end values.
     filtered_depth = filters.remove_appendage(filtered_depth, filter_config)
@@ -65,11 +70,11 @@ def filter_digiquartz(data_config: data.DataConfiguration, \
     # --------------------------------------------------------------------------
     
     # depth plot.
-    fig1, ax1 = plt.subplots(figsize=(5, 5))
+    fig1, ax1 = plt.subplots(figsize=(4, 4))
     ax1.plot(data["Epoch"] - data["Epoch"][0], data["Depth"], \
-        linewidth=1, label="Unfiltered")
+        linewidth=1.0, label="Unfiltered")
     ax1.plot(filtered_data["Epoch"] - data["Epoch"][0], \
-	    filtered_data["Depth"], linewidth=1, label="Filtered")
+	    filtered_data["Depth"], linewidth=1.0, label="Filtered")
     ax1.set_xlim(time_limits)
     ax1.set_ylim(depth_limits)
     ax1.set_xlabel(r"Time, $t$ $[\text{s}]$")
@@ -84,12 +89,13 @@ def filter_digiquartz(data_config: data.DataConfiguration, \
     # --------------------------------------------------------------------------
 
     if data_config.save_figures:
-        fig1.savefig(data_config.output + "ROV-Digiquartz-Depth.png", dpi=300)
+        fig1.savefig(data_config.output + "ROV-Pressure-Sensor-Depth.eps", 
+            dpi=300)
 
     if data_config.save_output:
         filtered_data = pd.DataFrame(filtered_data)
-        filtered_data.to_csv(data_config.output + "ROV-Digiquartz.csv", sep=',')
-
+        filtered_data.to_csv(data_config.output + "ROV-Pressure-Sensor.csv", 
+            sep=',')
 
 def main():
     # Plot limits.
@@ -121,7 +127,8 @@ def main():
         args.appendage)
     
     # Filter data.
-    filter_digiquartz(data_config, filter_config, time_limits, depth_limits)
+    filter_pressure_sensor(data_config, filter_config, time_limits, \
+        depth_limits)
 
 if __name__ == '__main__':
     main()

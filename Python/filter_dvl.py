@@ -37,13 +37,17 @@ def filter_dvl(data_config: data.DataConfiguration, \
     filtered_altitude = filters.add_appendage(altitude, filter_config)
 
     # Filter data and account for time delay.
-    filtered_altitude, delay = filters.FIR_filter(filtered_altitude, \
+    filtered_altitude, filter_delay = filters.FIR_filter(filtered_altitude, \
         filter_config, axis=1)
 
-    filtered_time = time - delay
+    filtered_time = time - filter_delay
 
-    print("Sampling time: {0}".format(1/filter_config.sample_frequency))
-    print("Filter time delay: {0}".format(delay))
+    print("\nDVL:")
+    print(" - Sampling time:      {0:.4f}".format( \
+        1 / filter_config.sample_frequency))
+    print(" - Sampling frequency: {0:.4f}".format( \
+        filter_config.sample_frequency))
+    print(" - Filter time delay:  {0:.4f}".format(filter_delay))
 
     # Remove end values.
     filtered_altitude = filters.remove_appendage(filtered_altitude, \
@@ -70,11 +74,11 @@ def filter_dvl(data_config: data.DataConfiguration, \
     # --------------------------------------------------------------------------
     
     # Altitude plot.
-    fig1, ax1 = plt.subplots(figsize=(5, 5))
+    fig1, ax1 = plt.subplots(figsize=(4, 4))
     ax1.plot(data["Epoch"] - data["Epoch"][0], data["Altitude"], \
-        linewidth=1, label="Unfiltered")
+        linewidth=1.0, label="Unfiltered")
     ax1.plot(filtered_data["Epoch"] - data["Epoch"][0], \
-	    filtered_data["Altitude"], linewidth=1, label="Filtered")
+	    filtered_data["Altitude"], linewidth=1.0, label="Filtered")
     ax1.set_xlim(time_limits)
     ax1.set_ylim(altitude_limits)
     ax1.set_xlabel(r"Time, $t$ $[\text{s}]$")
@@ -89,7 +93,7 @@ def filter_dvl(data_config: data.DataConfiguration, \
     # --------------------------------------------------------------------------
 
     if data_config.save_figures:
-        fig1.savefig(data_config.output + "ROV-DVL-Altitude.png", dpi=300)
+        fig1.savefig(data_config.output + "ROV-DVL-Altitude.eps", dpi=300)
 
     if data_config.save_output:
         filtered_data = pd.DataFrame(filtered_data)
@@ -102,7 +106,7 @@ def main():
 
     # Parse arguments.
     parser = argparse.ArgumentParser( \
-        description="Filter DVL data with a FIR filter.")
+        description="Filter DVL data with a FIR lowpass filter.")
     parser.add_argument("input", type=str, help="Input file path.")
     parser.add_argument("output", type=str, help="Output directory path.")
     parser.add_argument("order", type=int, help="Filter order.")

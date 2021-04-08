@@ -26,7 +26,8 @@ def main():
                 latitude = float(row["Latitude"])
                 longitude = float(row["Longitude"])
 
-                [[northing, easting], zone, hemisphere] = utm.LatLonToUtm(latitude, longitude)
+                [[northing, easting], zone, hemisphere] = utm.LatLonToUtm( \
+                    latitude, longitude)
 
                 writer.writerow({
                     "Datetime" : datetime,
