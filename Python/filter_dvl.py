@@ -64,7 +64,7 @@ def filter_dvl(data_config: data.DataConfiguration, \
     times = []
     for epoch in filtered_data["Epoch"]:
         time = datetime.datetime.fromtimestamp(epoch).strftime( \
-		    "%Y:%m:%d:%H:%M:%S.%f")
+            data_config.datetime_format)
         times.append(time)
 
     filtered_data["Datetime"] = np.array(times, dtype=str)

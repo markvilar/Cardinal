@@ -5,3 +5,4 @@ class DataConfiguration():
         self.show_figures = show_figures
         self.save_figures = save_figures
         self.save_output = save_output
+        self.datetime_format = "%Y-%m-%d-%H:%M:%S.%f"
