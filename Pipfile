@@ -6,10 +6,13 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-numpy = ">=1.13"
-scipy = "*"
 matplotlib = "*"
+msgpack = "*"
+numba = "*"
+numpy = ">=1.13"
+numpy-quaternion = "*"
 pandas = "*"
+scipy = "*"
 
 [requires]
 python_version = "3.9"

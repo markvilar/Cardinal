@@ -5,7 +5,7 @@ import pandas as pd
 import matplotlib
 matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
-plt.style.use("./Styles/scientific.mplstyle")
+plt.style.use("./Styles/Scientific.mplstyle")
 
 from typing import Dict, List
 
@@ -89,7 +89,7 @@ def filter_pressure_sensor(data_config: data.DataConfiguration, \
     # --------------------------------------------------------------------------
 
     if data_config.save_figures:
-        fig1.savefig(data_config.output + "ROV-Pressure-Sensor-Depth.eps", 
+        fig1.savefig(data_config.output + "ROV-Pressure-Sensor-Depth.png", 
             dpi=300)
 
     if data_config.save_output:

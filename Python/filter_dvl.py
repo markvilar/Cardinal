@@ -5,7 +5,7 @@ import pandas as pd
 import matplotlib
 matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
-plt.style.use("./Styles/scientific.mplstyle")
+plt.style.use("./Styles/Scientific.mplstyle")
 
 from typing import Dict, List
 
@@ -93,7 +93,7 @@ def filter_dvl(data_config: data.DataConfiguration, \
     # --------------------------------------------------------------------------
 
     if data_config.save_figures:
-        fig1.savefig(data_config.output + "ROV-DVL-Altitude.eps", dpi=300)
+        fig1.savefig(data_config.output + "ROV-DVL-Altitude.png", dpi=300)
 
     if data_config.save_output:
         filtered_data = pd.DataFrame(filtered_data)

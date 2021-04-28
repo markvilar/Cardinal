@@ -5,7 +5,7 @@ import pandas as pd
 import matplotlib
 matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
-plt.style.use("./Styles/scientific.mplstyle")
+plt.style.use("./Styles/Scientific.mplstyle")
 
 from typing import Dict, List
 
@@ -160,12 +160,12 @@ def filter_aps(data_config: data.DataConfiguration, \
         plt.show()
 
     if data_config.save_figures:
-        fig1.savefig(data_config.output + "ROV-APS-Northing.eps", dpi=300)
-        fig2.savefig(data_config.output + "ROV-APS-Easting.eps", dpi=300)
-        fig3.savefig(data_config.output + "ROV-APS-Depth.eps", dpi=300)
-        fig4.savefig(data_config.output + "ROV-APS-Planar-Trajectory.eps", \
+        fig1.savefig(data_config.output + "ROV-APS-Northing.png", dpi=300)
+        fig2.savefig(data_config.output + "ROV-APS-Easting.png", dpi=300)
+        fig3.savefig(data_config.output + "ROV-APS-Depth.png", dpi=300)
+        fig4.savefig(data_config.output + "ROV-APS-Planar-Trajectory.png", \
             dpi=300)
-        fig5.savefig(data_config.output + "ROV-APS-Trajectory.eps", dpi=300)
+        fig5.savefig(data_config.output + "ROV-APS-Trajectory.png", dpi=300)
 
     if data_config.save_output:
         filtered_data = pd.DataFrame(filtered_data)

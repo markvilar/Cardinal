@@ -5,7 +5,7 @@ import pandas as pd
 import matplotlib
 matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
-plt.style.use("./Styles/scientific.mplstyle")
+plt.style.use("./Styles/Scientific.mplstyle")
 
 from typing import Dict, List
 
@@ -125,11 +125,11 @@ def filter_gyroscope(data_config: data.DataConfiguration,
     # --------------------------------------------------------------------------
 
     if data_config.save_figures:
-        fig1.savefig(data_config.output + "ROV-Gyroscope-Roll.eps", \
+        fig1.savefig(data_config.output + "ROV-Gyroscope-Roll.png", \
             dpi=300)
-        fig2.savefig(data_config.output + "ROV-Gyroscope-Pitch.eps", \
+        fig2.savefig(data_config.output + "ROV-Gyroscope-Pitch.png", \
             dpi=300)
-        fig3.savefig(data_config.output + "ROV-Gyroscope-Heading.eps", \
+        fig3.savefig(data_config.output + "ROV-Gyroscope-Heading.png", \
             dpi=300)
 
     if data_config.save_output:
