@@ -15,9 +15,7 @@ import utilities
 import utm
 
 def filter_aps(data_config: data.DataConfiguration, \
-    filter_config: filters.FilterConfiguration, \
-    time_limits: List, northing_limits: List, easting_limits: List, \
-    depth_limits: List):
+    filter_config: filters.FilterConfiguration):
     """
     """
     data = pd.read_csv(data_config.input)
@@ -28,11 +26,6 @@ def filter_aps(data_config: data.DataConfiguration, \
         data["Depth"] ])
     filter_config.sample_frequency = \
         1 / np.mean(aps_time[1:] - aps_time[0:-1])
-
-    # --------------------------------------------------------------------------
-    # ---- Filtering. ----------------------------------------------------------
-    # --------------------------------------------------------------------------
-
 
     # Add end values.
     filtered_aps_data = filters.add_appendage(aps_data.copy(), \
@@ -62,11 +55,7 @@ def filter_aps(data_config: data.DataConfiguration, \
     filtered_data["UTM Zone"] = data["UTM Zone"]
     filtered_data["UTM Hemisphere"] = data["UTM Hemisphere"]
 
-    # --------------------------------------------------------------------------
-    # ---- Latitude / longitude calculations -----------------------------------
-    # --------------------------------------------------------------------------
-
-
+    # Latitude / longitude calculations.
     latitudes, longitudes = [], []
     for northing, easting, zone, hemisphere in \
         zip(filtered_data["UTM Northing"], filtered_data["UTM Easting"], \
@@ -80,10 +69,7 @@ def filter_aps(data_config: data.DataConfiguration, \
     filtered_data["Latitude"] = np.array(latitudes, dtype=float)
     filtered_data["Longitude"] = np.array(longitudes, dtype=float)
     
-    # --------------------------------------------------------------------------
-    # ---- Datetime calculations. ----------------------------------------------
-    # --------------------------------------------------------------------------
-
+    # Datetime calculations.
     times = []
     for epoch in filtered_data["Epoch"]:
         time = datetime.datetime.fromtimestamp(epoch).strftime(
@@ -92,92 +78,11 @@ def filter_aps(data_config: data.DataConfiguration, \
 
     filtered_data["Datetime"] = np.array(times, dtype=str)
 
-    # --------------------------------------------------------------------------
-    # ---- Plotting. -----------------------------------------------------------
-    # --------------------------------------------------------------------------
-    
-    # Northing plot.
-    fig1, ax1 = plt.subplots(figsize=(4, 4))
-    ax1.plot(data["Epoch"] - data["Epoch"][0], data["UTM Northing"], \
-        linewidth=1.0, label="Unfiltered")
-    ax1.plot(filtered_data["Epoch"] - data["Epoch"][0], \
-        filtered_data["UTM Northing"], linewidth=1.0, label="Filtered")
-    ax1.set_xlabel(r"Time, $t$ $[\text{s}]$")
-    ax1.set_ylabel(r"UTM Northing, $N$ $[\text{m}]$")
-    ax1.set_xlim(time_limits)
-    ax1.set_ylim(northing_limits)
-    ax1.legend()
-
-    # Easting plot.
-    fig2, ax2 = plt.subplots(figsize=(4, 4))
-    ax2.plot(data["Epoch"] - data["Epoch"][0], data["UTM Easting"], \
-        linewidth=1.0, label="Unfiltered")
-    ax2.plot(filtered_data["Epoch"] - data["Epoch"][0], \
-        filtered_data["UTM Easting"], linewidth=1.0, label="Filtered")
-    ax2.set_xlabel(r"Time, $t$ $[\text{s}]$")
-    ax2.set_ylabel(r"UTM Easting, $E$ $[\text{m}]$")
-    ax2.set_xlim(time_limits)
-    ax2.set_ylim(easting_limits)
-    ax2.legend()
-
-    # Depth plot.
-    fig3, ax3 = plt.subplots(figsize=(4, 4))
-    ax3.plot(data["Epoch"] - data["Epoch"][0], data["Depth"], \
-        linewidth=1.0, label="Unfiltered")
-    ax3.plot(filtered_data["Epoch"] - data["Epoch"][0], \
-        filtered_data["Depth"], linewidth=1.0, label="Filtered")
-    ax3.set_xlabel(r"Time, $t$ $[\text{s}]$")
-    ax3.set_ylabel(r"Depth, $D$ $[\text{m}]$")
-    ax3.set_xlim(time_limits)
-    ax3.set_ylim(depth_limits)
-    ax3.legend()
-    
-    # Planar trajectory plot.
-    fig4, ax4 = plt.subplots(figsize=(4, 4))
-    ax4.plot(data["UTM Easting"], data["UTM Northing"], \
-	    linewidth=1.0, label="Unfiltered") 
-    ax4.plot(filtered_data["UTM Easting"], filtered_data["UTM Northing"], \
-	    linewidth=1.0, label="Filtered") 
-    ax4.set_xlabel(r"UTM Easting, $E$ $[\text{m}]$")
-    ax4.set_ylabel(r"UTM Northing, $N$ $[\text{m}]$")
-    ax4.axis("Equal")
-    ax4.legend()
-
-    # 3D trajectory plot.
-    fig5 = plt.figure(figsize=(6, 6))
-    ax5 = fig5.add_subplot(111, projection='3d')
-    ax5.plot(data["UTM Easting"], data["UTM Northing"], data["Depth"], \
-        linewidth=1.0, label="Unfiltered")
-    ax5.plot(filtered_data["UTM Easting"], filtered_data["UTM Northing"], \
-        filtered_data["Depth"], linewidth=1.0, label="Filtered")
-    ax5.invert_zaxis()
-    ax5.set_xlabel(r"UTM Easting, $E$ $[\text{m}]$")
-    ax5.set_ylabel(r"UTM Northing, $N$ $[\text{m}]$")
-    ax5.set_zlabel(r"Depth, $D$ $[\text{m}]$")
-    ax5.legend()
-
-    if data_config.show_figures:
-        plt.show()
-
-    if data_config.save_figures:
-        fig1.savefig(data_config.output + "ROV-APS-Northing.png", dpi=300)
-        fig2.savefig(data_config.output + "ROV-APS-Easting.png", dpi=300)
-        fig3.savefig(data_config.output + "ROV-APS-Depth.png", dpi=300)
-        fig4.savefig(data_config.output + "ROV-APS-Planar-Trajectory.png", \
-            dpi=300)
-        fig5.savefig(data_config.output + "ROV-APS-Trajectory.png", dpi=300)
-
     if data_config.save_output:
         filtered_data = pd.DataFrame(filtered_data)
         filtered_data.to_csv(data_config.output + "ROV-APS.csv", sep=',')
 
 def main():
-    # Plot limits.
-    time_limits = [450, 480]
-    northing_limits = [7066362, 7066370]
-    easting_limits = [597805, 597811]
-    depth_limits = [56, 59]
-
     # Parse arguments.
     parser = argparse.ArgumentParser( \
         description="Filter APS data with a FIR lowpass filter.")
@@ -203,8 +108,7 @@ def main():
         args.appendage)
     	
     # Filter data.
-    filter_aps(data_config, filter_config, time_limits, northing_limits, \
-        easting_limits, depth_limits)
+    filter_aps(data_config, filter_config)
 
 if __name__ == "__main__":
     main()

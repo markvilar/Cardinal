@@ -15,8 +15,7 @@ import utilities
 import utm
 
 def filter_pressure_sensor(data_config: data.DataConfiguration, \
-    filter_config: filters.FilterConfiguration, time_limits: List, \
-    depth_limits: List):
+    filter_config: filters.FilterConfiguration):
     """
     """
     data = pd.read_csv(data_config.input)
@@ -25,10 +24,6 @@ def filter_pressure_sensor(data_config: data.DataConfiguration, \
     time = data["Epoch"].to_numpy()
     depth = data["Depth"].to_numpy()
     filter_config.sample_frequency = 1 / np.mean(time[1:] - time[0:-1])
-
-    # --------------------------------------------------------------------------
-    # ---- Filtering. ----------------------------------------------------------
-    # --------------------------------------------------------------------------
 
     # Add end values.
     filtered_depth = filters.add_appendage(depth.copy(), filter_config)
@@ -53,10 +48,7 @@ def filter_pressure_sensor(data_config: data.DataConfiguration, \
     filtered_data["Epoch"] = filtered_time
     filtered_data["Depth"] = filtered_depth
 
-    # --------------------------------------------------------------------------
-    # ---- Datetime calculations. ----------------------------------------------
-    # --------------------------------------------------------------------------
-
+    # Datetime calculations.
     times = []
     for epoch in filtered_data["Epoch"]:
         time = datetime.datetime.fromtimestamp(epoch).strftime( \
@@ -65,43 +57,13 @@ def filter_pressure_sensor(data_config: data.DataConfiguration, \
 
     filtered_data["Datetime"] = np.array(times, dtype=str)
 
-    # --------------------------------------------------------------------------
-    # ---- Plotting. -----------------------------------------------------------
-    # --------------------------------------------------------------------------
-    
-    # depth plot.
-    fig1, ax1 = plt.subplots(figsize=(4, 4))
-    ax1.plot(data["Epoch"] - data["Epoch"][0], data["Depth"], \
-        linewidth=1.0, label="Unfiltered")
-    ax1.plot(filtered_data["Epoch"] - data["Epoch"][0], \
-	    filtered_data["Depth"], linewidth=1.0, label="Filtered")
-    ax1.set_xlim(time_limits)
-    ax1.set_ylim(depth_limits)
-    ax1.set_xlabel(r"Time, $t$ $[\text{s}]$")
-    ax1.set_ylabel(r"Depth, $D$ $[\text{m}]$")
-    ax1.legend()
-
-    if data_config.show_figures:
-        plt.show()
-
-    # --------------------------------------------------------------------------
-    # ---- Save data. ----------------------------------------------------------
-    # --------------------------------------------------------------------------
-
-    if data_config.save_figures:
-        fig1.savefig(data_config.output + "ROV-Pressure-Sensor-Depth.png", 
-            dpi=300)
-
+    # Save data.
     if data_config.save_output:
         filtered_data = pd.DataFrame(filtered_data)
         filtered_data.to_csv(data_config.output + "ROV-Pressure-Sensor.csv", 
             sep=',')
 
 def main():
-    # Plot limits.
-    time_limits = [450, 480]
-    depth_limits = [55, 59]
-
     # Parse arguments.
     parser = argparse.ArgumentParser( \
         description="Filter HiPAP data with a FIR filter.")
@@ -127,8 +89,7 @@ def main():
         args.appendage)
     
     # Filter data.
-    filter_pressure_sensor(data_config, filter_config, time_limits, \
-        depth_limits)
+    filter_pressure_sensor(data_config, filter_config)
 
 if __name__ == '__main__':
     main()
