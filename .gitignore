@@ -1,0 +1,13 @@
+Data/*
+Figures/*
+Output/*
+
+!Data/.gitkeep
+!Figures/.gitkeep
+!Output/.gitkeep
+
+*.swp
+*.swo
+*.swa
+
+*.csv
