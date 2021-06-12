@@ -54,7 +54,7 @@ def rolling_window_filter(data, mode='rolling', window=262, threshold=3):
 
 def main():
     path = "/home/martin/dev/Cardinal/Data/Raw/ROV-APS.csv"
-    show = True
+    show = False
     save = True
 
     aps = pd.read_csv(path)
@@ -86,12 +86,14 @@ def main():
     ax1[0].set_xlabel(r"Time, $t$ $[\text{s}]$")
     ax1[0].set_ylabel(r"Northing, $N$ $[\text{m}]$")
     ax1[0].set_xlim([ 1611313080, 1611314600 ])
+    ax1[0].set_ylim([ 7066350, 7066390 ])
 
     ax1[1].plot(time, easting["Values"])
     ax1[1].scatter(time[mask], easting["Values"][mask], color="r")
     ax1[1].set_xlabel(r"Time, $t$ $[\text{s}]$")
     ax1[1].set_ylabel(r"Easting, $E$ $[\text{m}]$")
     ax1[1].set_xlim([ 1611313080, 1611314600 ])
+    ax1[1].set_ylim([ 597780, 597880 ])
 
     ax1[2].plot(time, depth["Values"], label="Samples")
     ax1[2].scatter(time[mask], depth["Values"][mask], color="r", \
@@ -99,6 +101,7 @@ def main():
     ax1[2].set_xlabel(r"Time, $t$ $[\text{s}]$")
     ax1[2].set_ylabel(r"Depth, $D$ $[\text{m}]$")
     ax1[2].set_xlim([ 1611313080, 1611314600 ])
+    ax1[2].set_ylim([ -10, 75])
 
     lg1 = fig1.legend(bbox_to_anchor=(1, 1), loc="upper right", frameon=True, \
         fancybox=False)

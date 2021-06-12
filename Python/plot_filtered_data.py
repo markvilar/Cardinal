@@ -28,7 +28,7 @@ def plot_navigation_data(unfiltered: Dict, filtered: Dict, output: str, \
     ax1[0].set_xlabel(r"Time, $t$ $[\text{s}]$")
     ax1[0].set_ylabel(r"Northing, $N$ $[\text{m}]$")
     ax1[0].set_xlim([ 1611313600, 1611313640 ])
-    ax1[0].set_ylim([ 7066365, 7066369 ])
+    ax1[0].set_ylim([ 7066365, 7066371 ])
 
     # Easting plot.
     ax1[1].plot(unfiltered["APS"]["Epoch"], unfiltered["APS"]["UTM Easting"], \
@@ -66,7 +66,7 @@ def plot_navigation_data(unfiltered: Dict, filtered: Dict, output: str, \
     ax2[0].plot(filtered["Gyroscope"]["Epoch"], filtered["Gyroscope"]["Roll"], linewidth=1.0)
     ax2[0].set_xlabel(r"Time, $t$ $[\text{s}]$")
     ax2[0].set_ylabel(r"Roll, $\theta$ $[\text{deg}]$")
-    ax2[0].set_xlim([ 1611313600, 1611313640 ])
+    ax2[0].set_xlim([ 1611313600, 1611313620 ])
     ax2[0].set_ylim([ 0, 6 ])
 
     # Pitch plot.
@@ -74,7 +74,7 @@ def plot_navigation_data(unfiltered: Dict, filtered: Dict, output: str, \
     ax2[1].plot(filtered["Gyroscope"]["Epoch"], filtered["Gyroscope"]["Pitch"], linewidth=1.0)
     ax2[1].set_xlabel(r"Time, $t$ $[\text{s}]$")
     ax2[1].set_ylabel(r"Pitch, $\phi$ $[\text{deg}]$")
-    ax2[1].set_xlim([ 1611313600, 1611313640 ])
+    ax2[1].set_xlim([ 1611313600, 1611313620 ])
     ax2[1].set_ylim([ -1, 8 ])
 
     # Heading plot.
@@ -84,7 +84,7 @@ def plot_navigation_data(unfiltered: Dict, filtered: Dict, output: str, \
         linewidth=1.0, label="Filtered")
     ax2[2].set_xlabel(r"Time, $t$ $[\text{s}]$")
     ax2[2].set_ylabel(r"Heading, $\psi$ $[\text{deg}]$")
-    ax2[2].set_xlim([ 1611313600, 1611313640 ])
+    ax2[2].set_xlim([ 1611313600, 1611313620 ])
     ax2[2].set_ylim([ 145, 175 ])
 
     lg2 = fig2.legend(bbox_to_anchor=(1, 1), loc="upper right", frameon=True, \
@@ -93,44 +93,55 @@ def plot_navigation_data(unfiltered: Dict, filtered: Dict, output: str, \
     fr2.set_facecolor("white")
     fr2.set_edgecolor("black")
 
-    # ---- DVL and PG ---------------------------------------------------------
+    # ---- DVL ----------------------------------------------------------------
 
-    fig3, ax3 = plt.subplots(nrows=2, ncols=1, figsize=(7, 3))
-    fig3.tight_layout(pad=2.0, w_pad=2.0, h_pad=2.0)
+    fig3, ax3 = plt.subplots(figsize=(7, 1.95))
 
-    ax3[0].plot(unfiltered["DVL"]["Epoch"], unfiltered["DVL"]["Altitude"], \
-        linewidth=1.0)
-    ax3[0].plot(filtered["DVL"]["Epoch"], filtered["DVL"]["Altitude"], \
-        linewidth=1.0)
-    ax3[0].set_xlabel(r"Time, $t$ $[\text{s}]$")
-    ax3[0].set_ylabel(r"Altitude, $h$ $[\text{m}]$")
-    ax3[0].set_xlim([ 1611313600, 1611313640 ])
-    ax3[0].set_ylim([ 1.1, 1.8 ])
-
-    ax3[1].plot(unfiltered["Pressure"]["Epoch"], \
-        unfiltered["Pressure"]["Depth"], linewidth=1.0, \
-        label="Unfiltered")
-    ax3[1].plot(filtered["Pressure"]["Epoch"], filtered["Pressure"]["Depth"], \
+    ax3.plot(unfiltered["DVL"]["Epoch"], unfiltered["DVL"]["Altitude"], \
+        linewidth=1.0, label="Unfiltered")
+    ax3.plot(filtered["DVL"]["Epoch"], filtered["DVL"]["Altitude"], \
         linewidth=1.0, label="Filtered")
-    ax3[1].set_xlabel(r"Time, $t$ $[\text{s}]$")
-    ax3[1].set_ylabel(r"Depth, $D$ $[\text{m}]$")
-    ax3[1].set_xlim([ 1611313600, 1611313640 ])
-    ax3[1].set_ylim([ 56.5, 58 ])
+    ax3.set_xlabel(r"Time, $t$ $[\text{s}]$")
+    ax3.set_ylabel(r"Altitude, $h$ $[\text{m}]$")
+    ax3.set_xlim([ 1611313600, 1611313620 ])
+    ax3.set_ylim([ 1.1, 1.9 ])
 
     lg3 = fig3.legend(bbox_to_anchor=(1, 1), loc="upper right", frameon=True, \
         fancybox=False)
     fr3 = lg3.get_frame()
     fr3.set_facecolor("white")
     fr3.set_edgecolor("black")
+    fig3.tight_layout(pad=2.0)
+
+    # ---- PG -----------------------------------------------------------------
+
+    fig4, ax4 = plt.subplots(figsize=(7, 1.95))
+
+    ax4.plot(unfiltered["Pressure"]["Epoch"], unfiltered["Pressure"]["Depth"], \
+        linewidth=1.0, label="Unfiltered")
+    ax4.plot(filtered["Pressure"]["Epoch"], filtered["Pressure"]["Depth"], \
+        linewidth=1.0, label="Filtered")
+    ax4.set_xlabel(r"Time, $t$ $[\text{s}]$")
+    ax4.set_ylabel(r"Depth, $D$ $[\text{m}]$")
+    ax4.set_xlim([ 1611313600, 1611313620 ])
+    ax4.set_ylim([ 56.5, 57.7 ])
+
+    lg4 = fig4.legend(bbox_to_anchor=(1, 1), loc="upper right", frameon=True, \
+        fancybox=False)
+    fr4 = lg4.get_frame()
+    fr4.set_facecolor("white")
+    fr4.set_edgecolor("black")
+
+    fig4.tight_layout(pad=2.0)
 
     if show:
         plt.show()
 
     if save:
-        fig1.savefig(output + "ROV-APS-Series.pdf", dpi=300)
-        fig2.savefig(output + "ROV-Gyroscope-Series.pdf", dpi=300)
-        fig3.savefig(output + "ROV-DVL-PG-Series.pdf", dpi=300)
-
+        fig1.savefig(output + "ROV-APS-Filtered.pdf", dpi=300)
+        fig2.savefig(output + "ROV-Gyroscope-Filtered.pdf", dpi=300)
+        fig3.savefig(output + "ROV-DVL-Filtered.pdf", dpi=300)
+        fig4.savefig(output + "ROV-PS-Filtered.pdf", dpi=300)
 
 def main():
     output = "/home/martin/dev/Cardinal/Output/"
