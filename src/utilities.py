@@ -1,5 +1,4 @@
 import csv
-import re
 import sys
 
 import numpy as np
@@ -56,11 +55,6 @@ def progress_bar(percentage_done: int, bar_width: int=60):
 	bar = '=' * progress + ' ' * (bar_width - progress)
 	sys.stdout.write('[{0}] {1:.2f}{2}\r'.format(bar, percentage_done, '%'))
 	sys.stdout.flush()
-
-def custom_split(string, separator_list):
-    # Create regular expression dynamically.
-    regular_expression = '|'.join(map(re.escape, separator_list))
-    return re.split(regular_expression, string)
 
 def closest_point(reference, data):
     relative = data - reference
