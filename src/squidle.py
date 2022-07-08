@@ -6,28 +6,44 @@ from typing import Optional
 
 import pandas as pd
 
+import utm
+
 @dataclass
 class Deployment:
     key: str
     data: pd.DataFrame = None
 
-    def __post_init__(self):
-        pass
-
     def __getitem__(self, item):
         return self.data[item]
+
+    def get_data(self):
+        return self.data
+
+    def set_data(self, data: pd.DataFrame):
+        self.data = data
+
+def calculate_utm_position(row):
+    (easting, northing, zone, band) \
+        = utm.from_latlon(row["pose.lat"], row["pose.lon"])
+    return pd.Series([easting, northing, zone, band], index=["pose.easting", 
+        "pose.northing", "pose.utm_zone", "pose.utm_band"])
+
+def calculate_utm_positions(deployment: Deployment) -> Deployment:
+    data = deployment.get_data()
+    utm_positions = data.apply(calculate_utm_position, axis = 1, 
+        result_type="expand")
+    return data.join(utm_positions)
 
 @dataclass
 class Collection:
-    path: str
     data: pd.DataFrame = None
-
-    def __post_init__(self):
-        if self.data is None:
-            self.data = pd.read_csv(self.path, index_col=0)
 
     def __getitem__(self, item):
         return self.data[item]
+
+    def load_from_file(self, path: str):
+         if self.data is None:
+            self.data = pd.read_csv(path, index_col=0)
 
     def get_deployments(self) -> list[Deployment]:
         deployments = []
@@ -37,7 +53,7 @@ class Collection:
         return deployments
 
 @dataclass
-class MultiDeploymentDataset():
+class Dataset():
     key: str
     deployments: list[Deployment] = field(default_factory=list)
 
@@ -47,5 +63,5 @@ class MultiDeploymentDataset():
     def add_deployments(self, deployments: list[Deployment]):
         self.deployments.extend(deployments)
 
-    def save_dataset(self, path: str):
-        pass
+    def get_deployments(self) -> list[Deployment]:
+        return self.deployments

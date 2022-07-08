@@ -3,7 +3,6 @@ from dataclasses import dataclass, field
 
 import pandas as pd
 
-from geodesic import latlon_to_utm
 from nmea import parse_nmea_sentence
 
 @dataclass
