@@ -15,9 +15,11 @@ class FileReader():
         if skip_header:
             header = self.read_line()
 
-    @property
     def lines_total(self):
         return self.lines_total_
+
+    def line_count(self):
+        return self.line_count_
 
     def is_end_of_file(self):
         return self.line_count_ >= self.lines_total_
@@ -50,7 +52,3 @@ class TableReader():
 
     def get_data(self):
         return self.data_
-
-class EIVAFormatter():
-    def __init__(self):
-        """ """
